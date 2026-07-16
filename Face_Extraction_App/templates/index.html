@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description"
+        content="Professional AI Face Extraction Studio built with Flask and OpenCV">
+
+    <title>AI Face Extraction Studio</title>
+
+    <!-- Google Font -->
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome -->
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <!-- CSS -->
+
+    <link rel="stylesheet" 
+        href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="page-wrapper">
+
+<!-- ================================================= -->
+<!-- NAVBAR -->
+<!-- ================================================= -->
+
+<header class="navbar">
+
+    <div class="logo">
+
+        <div class="logo-icon">
+
+            <i class="fa-solid fa-robot"></i>
+
+        </div>
+
+        <div>
+
+            <h2>AI Face Extraction Studio</h2>
+
+            <span>Powered by Flask • OpenCV • Haar Cascade</span>
+
+        </div>
+
+    </div>
+
+    <div class="nav-actions">
+
+        <button id="themeToggle"
+            class="circle-btn">
+
+            <i class="fa-solid fa-moon"></i>
+
+        </button>
+
+    </div>
+
+</header>
+
+<!-- ================================================= -->
+<!-- HERO -->
+<!-- ================================================= -->
+
+<section class="hero">
+
+    <div class="hero-left">
+
+        <span class="hero-tag">
+
+            Artificial Intelligence
+
+        </span>
+
+        <h1>
+
+            Detect, Extract and Download
+            Faces from Images
+            Instantly
+
+        </h1>
+
+        <p>
+
+            Upload an image and our AI-powered application
+            automatically detects every face, crops it,
+            previews the results and allows downloading
+            individual faces or all extracted faces.
+
+        </p>
+
+        <div class="hero-buttons">
+
+            <button id="browseHeroBtn"
+                class="primary-btn">
+
+                <i class="fa-solid fa-upload"></i>
+
+                Upload Image
+
+            </button>
+
+            <button class="secondary-btn"
+                onclick="document.getElementById('statsSection').scrollIntoView({behavior:'smooth'})">
+
+                Learn More
+
+            </button>
+
+        </div>
+
+    </div>
+
+    <div class="hero-right">
+
+        <div class="hero-card">
+
+            <div class="pulse-circle"></div>
+
+            <i class="fa-solid fa-camera"></i>
+
+            <h3>
+
+                AI Face Detection
+
+            </h3>
+
+            <p>
+
+                Fast • Accurate • Automatic
+
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ================================================= -->
+<!-- DASHBOARD -->
+<!-- ================================================= -->
+
+<main class="dashboard">
+
+<!-- ================= LEFT PANEL ================= -->
+
+<section class="left-panel">
+
+<div class="glass-card">
+
+<div class="card-header">
+
+<h2>
+
+<i class="fa-solid fa-cloud-arrow-up"></i>
+
+Upload Image
+
+</h2>
+
+</div>
+
+<div
+id="dropZone"
+class="drop-zone">
+
+<div class="upload-icon">
+
+<i class="fa-solid fa-image"></i>
+
+</div>
+
+<h3>
+
+Drag & Drop Your Image
+
+</h3>
+
+<p>
+
+or click below
+
+</p>
+
+<input
+
+type="file"
+
+id="imageInput"
+
+accept=".png,.jpg,.jpeg,.webp"
+
+hidden>
+
+<button
+
+id="browseBtn"
+
+class="primary-btn">
+
+Browse Files
+
+</button>
+
+<div class="supported">
+
+PNG • JPG • JPEG • WEBP
+
+</div>
+
+</div>
+
+<div class="button-group">
+
+<button
+
+id="detectBtn"
+
+class="success-btn">
+
+<i class="fa-solid fa-wand-magic-sparkles"></i>
+
+Extract Faces
+
+</button>
+
+<button
+
+id="resetBtn"
+
+class="danger-btn">
+
+<i class="fa-solid fa-rotate-left"></i>
+
+Reset
+
+</button>
+
+</div>
+
+</div>
+
+<!-- ================= STATISTICS ================= -->
+
+<div
+class="glass-card"
+id="statsSection">
+
+<div class="card-header">
+
+<h2>
+
+<i class="fa-solid fa-chart-simple"></i>
+
+Statistics
+
+</h2>
+
+</div>
+
+<div class="stats-grid">
+
+<div class="stat-card">
+
+<i class="fa-solid fa-user-group"></i>
+
+<h3 id="faceCount">
+
+0
+
+</h3>
+
+<p>
+
+Faces Detected
+
+</p>
+
+</div>
+
+<div class="stat-card">
+
+<i class="fa-solid fa-stopwatch"></i>
+
+<h3 id="processingTime">
+
+0 sec
+
+</h3>
+
+<p>
+
+Processing Time
+
+</p>
+
+</div>
+
+<div class="stat-card">
+
+<i class="fa-solid fa-image"></i>
+
+<h3 id="resolution">
+
+--
+
+</h3>
+
+<p>
+
+Resolution
+
+</p>
+
+</div>
+
+<div class="stat-card">
+
+<i class="fa-solid fa-file"></i>
+
+<h3 id="fileSize">
+
+--
+
+</h3>
+
+<p>
+
+File Size
+
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- ================= RIGHT PANEL ================= -->
+
+<section class="right-panel">
+
+<div class="glass-card">
+
+<div class="card-header">
+
+<h2>
+
+<i class="fa-solid fa-photo-film"></i>
+
+Original Image
+
+</h2>
+
+</div>
+
+<div class="image-container">
+
+<img
+
+id="previewImage"
+
+src=""
+
+alt="Uploaded Image"
+
+hidden>
+
+<div
+
+id="previewPlaceholder"
+
+class="placeholder">
+
+<i class="fa-regular fa-image"></i>
+
+<p>
+
+Upload an image to preview it.
+
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- ================================================= -->
+<!-- DETECTED FACES -->
+<!-- ================================================= -->
+
+<div class="glass-card">
+
+<div class="card-header">
+
+<h2>
+
+<i class="fa-solid fa-user-check"></i>
+
+Detected Faces
+
+</h2>
+
+<div>
+
+<button
+id="downloadAllBtn"
+class="primary-btn">
+
+<i class="fa-solid fa-download"></i>
+
+Download All
+
+</button>
+
+</div>
+
+</div>
+
+<div
+
+id="gallery"
+
+class="gallery">
+
+<div class="placeholder">
+
+<i class="fa-solid fa-face-smile"></i>
+
+<p>
+
+No faces extracted yet.
+
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+</main>
+
+<!-- ================================================= -->
+<!-- LOADING OVERLAY -->
+<!-- ================================================= -->
+
+<div id="loadingOverlay" class="loading-overlay hidden">
+
+    <div class="loader-card">
+
+        <div class="loader-circle"></div>
+
+        <h2>
+
+            AI is Processing Your Image
+
+        </h2>
+
+        <p>
+
+            Detecting and extracting faces...
+
+        </p>
+
+        <div class="progress">
+
+            <div id="progressBar" class="progress-bar"></div>
+
+        </div>
+
+        <span id="loadingText">
+
+            Please wait...
+
+        </span>
+
+    </div>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- IMAGE MODAL -->
+<!-- ================================================= -->
+
+<div id="imageModal" class="image-modal">
+
+    <span id="closeModal" class="close-modal">
+
+        &times;
+
+    </span>
+
+    <img
+
+        id="modalImage"
+
+        src=""
+
+        alt="Face Preview">
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- TOAST NOTIFICATIONS -->
+<!-- ================================================= -->
+
+<div id="toastContainer"></div>
+
+
+<!-- ================================================= -->
+<!-- FEATURES -->
+<!-- ================================================= -->
+
+<section class="features-section">
+
+    <div class="section-title">
+
+        <h2>
+
+            Why Choose AI Face Extraction Studio?
+
+        </h2>
+
+        <p>
+
+            A modern, intelligent, and responsive application for detecting
+            and extracting faces from images.
+
+        </p>
+
+    </div>
+
+    <div class="features-grid">
+
+        <div class="feature-card">
+
+            <i class="fa-solid fa-bolt"></i>
+
+            <h3>
+
+                Lightning Fast
+
+            </h3>
+
+            <p>
+
+                Detect faces in seconds using optimized
+                OpenCV algorithms.
+
+            </p>
+
+        </div>
+
+        <div class="feature-card">
+
+            <i class="fa-solid fa-user-check"></i>
+
+            <h3>
+
+                Accurate Detection
+
+            </h3>
+
+            <p>
+
+                Uses Haar Cascade classifiers to detect
+                multiple faces reliably.
+
+            </p>
+
+        </div>
+
+        <div class="feature-card">
+
+            <i class="fa-solid fa-download"></i>
+
+            <h3>
+
+                Easy Downloads
+
+            </h3>
+
+            <p>
+
+                Download each detected face individually
+                or all extracted faces together.
+
+            </p>
+
+        </div>
+
+        <div class="feature-card">
+
+            <i class="fa-solid fa-mobile-screen"></i>
+
+            <h3>
+
+                Fully Responsive
+
+            </h3>
+
+            <p>
+
+                Works beautifully on desktops,
+                tablets and mobile devices.
+
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- HOW IT WORKS -->
+<!-- ================================================= -->
+
+<section class="workflow-section">
+
+    <div class="section-title">
+
+        <h2>
+
+            Simple Workflow
+
+        </h2>
+
+    </div>
+
+    <div class="workflow">
+
+        <div class="step">
+
+            <div class="step-number">
+
+                1
+
+            </div>
+
+            <h3>
+
+                Upload Image
+
+            </h3>
+
+            <p>
+
+                Drag & drop or browse your image.
+
+            </p>
+
+        </div>
+
+        <div class="step-arrow">
+
+            ➜
+
+        </div>
+
+        <div class="step">
+
+            <div class="step-number">
+
+                2
+
+            </div>
+
+            <h3>
+
+                AI Detection
+
+            </h3>
+
+            <p>
+
+                OpenCV detects every face automatically.
+
+            </p>
+
+        </div>
+
+        <div class="step-arrow">
+
+            ➜
+
+        </div>
+
+        <div class="step">
+
+            <div class="step-number">
+
+                3
+
+            </div>
+
+            <h3>
+
+                Download
+
+            </h3>
+
+            <p>
+
+                Save extracted faces individually
+                or all together.
+
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- FOOTER -->
+<!-- ================================================= -->
+
+<footer class="footer">
+
+    <div class="footer-content">
+
+        <h3>
+
+            AI Face Extraction Studio
+
+        </h3>
+
+        <p>
+
+            Flask • OpenCV • Haar Cascade
+
+        </p>
+
+        <div class="footer-icons">
+
+            <i class="fa-solid fa-camera"></i>
+
+            <i class="fa-solid fa-brain"></i>
+
+            <i class="fa-solid fa-computer"></i>
+
+        </div>
+
+        <p class="copyright">
+
+            © 2026 AI Face Extraction Studio
+
+        </p>
+
+    </div>
+
+</footer>
+
+
+<!-- ================================================= -->
+<!-- JAVASCRIPT -->
+<!-- ================================================= -->
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</div>
+
+</body>
+
+</html>
